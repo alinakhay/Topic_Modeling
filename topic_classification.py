@@ -41,3 +41,25 @@ topics = [row[2] for row in reviews]
 # Process the texts to so they are ready for training
 # But transform the list of words back to string format to feed it to sklearn
 texts = [" ".join(process_text(text)) for text in texts]
+
+
+from sklearn.feature_extraction.text import CountVectorizer
+matrix = CountVectorizer(max_features=1000)
+vectors = matrix.fit_transform(texts).toarray()
+
+
+from sklearn.model_selection import train_test_split
+vectors_train, vectors_test, topics_train, topics_test = train_test_split(vectors, topics)
+
+
+from sklearn.naive_bayes import GaussianNB
+classifier = GaussianNB()
+classifier.fit(vectors_train, topics_train)
+
+# Predict with the testing set
+topics_pred = classifier.predict(vectors_test)
+
+# ...and measure the accuracy of the results
+from sklearn.metrics import classification_report
+print(classification_report(topics_test, topics_pred))
+
